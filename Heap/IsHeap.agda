@@ -60,36 +60,36 @@ mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih 
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
   | lte x with mergeIH lrih r
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
- | lte x | m with mergeT lr rt
+  | lte x | m with mergeT lr rt
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
- | lte x | m | n with ord (rank ll) (rank n)
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
- | lte x | m@(leafIsHeap .leaf refl) | n@.leaf | lte y = branchIsHeap (branch n (item lv (suc (rank ll))) ll) refl (leafIsHeap leaf refl) llih (lv ≤∞) llp
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
- | lte x | m@(branchIsHeap {ml} {item mv _} {mr} mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | lte y
-  = branchIsHeap (branch mt (item lv (suc (rank ll))) ll) refl (branchIsHeap mt refl lih rih lp rp) llih {! x  !} llp
-    where
-      k : mv ≡ lv
-      k = {!   !}
-
- -- | lte x | m | n | lte y = branchIsHeap (branch n (item lv (suc (rank ll))) ll) refl m llih {! m  !} llp
--- mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
---  | lte x | m | n | lte y = branchIsHeap (branch n (item lv (suc (rank ll))) ll) refl m llih {!   !} llp
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
- | lte x | m | n | gte y = {!   !}
-
-
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
-  | gte x with mergeT lt rr
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
-  | gte x | m with ord (rank rl) (rank m) | mergeIH l rrih
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
-  | gte x | m | lte y | n = branchIsHeap (branch m (item rv (suc (rank rl))) rl) refl {!   !} rlih {!   !} {!   !}
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _)
-  | gte x | m | gte y | n = {!   !}
-
-
--- -- mergeIH l@(branchIsHeap {ll} {item lv _} {lr} .(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} .(branch _ _ _) refl rlih rrih _ _) | gte x | y = {!   !}
--- mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _) | gte x | leafIsHeap .(mergeT lt rr) x₂ = {! x₂  !}
--- -- mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _) | gte x | leafIsHeap .(mergeT lt rr) x₂ = {!   !}
--- mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih _ _) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih _ _) | gte x | branchIsHeap .(mergeT lt rr) x₂ y y₁ x₃ x₄ = {!   !}
+  | lte x | m | n with ord (rank ll) (rank n)
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | lte x | m@(leafIsHeap .leaf refl) | n@.leaf | lte y
+    = branchIsHeap (branch n (item lv (suc (rank ll))) ll) refl (leafIsHeap leaf refl) llih (lv ≤∞) llp
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | lte x | m@(branchIsHeap {_} {item mv _} mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | lte y
+    = branchIsHeap (branch mt (item lv (suc (rank ll))) ll) refl (branchIsHeap mt refl lih rih lp rp) llih (lemma x) llp
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | lte x | m@(leafIsHeap .leaf refl) | n@.leaf | gte y
+    = branchIsHeap (branch ll (item lv 1) leaf) refl llih (leafIsHeap leaf refl) llp (lv ≤∞)
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | lte x | m@(branchIsHeap {_} {item mv _} mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | gte y
+    = branchIsHeap (branch ll (item lv (suc (rank mt))) mt) refl llih (branchIsHeap mt refl lih rih lp rp) llp (lemma x)
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x with mergeIH l rrih
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m with mergeT lt rr
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m | n with ord (rank rl) (rank n)
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m@(leafIsHeap .leaf refl) | n@.leaf | lte y
+    = branchIsHeap (branch leaf (item rv (suc (rank rl))) rl) refl (leafIsHeap leaf refl) rlih (rv ≤∞) rlp
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m@(branchIsHeap {_} {item mv _} mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | lte y
+    = branchIsHeap (branch mt (item rv (suc (rank rl))) rl) refl (branchIsHeap mt refl lih rih lp rp) rlih (lemma x) rlp
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m@(leafIsHeap .leaf refl) | n@.leaf | gte y
+    = branchIsHeap (branch leaf (item rv 1) rl) refl (leafIsHeap leaf refl) rlih (rv ≤∞) rlp
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m@(branchIsHeap {_} {item mv _} mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | gte y
+    = branchIsHeap (branch mt (item rv (suc (rank mt))) rl) refl (branchIsHeap mt refl lih rih lp rp) rlih (lemma x) rlp
