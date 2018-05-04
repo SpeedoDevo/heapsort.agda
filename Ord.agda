@@ -32,3 +32,8 @@ ord (suc x) zero = gte (zero≤ (suc x))
 ord (suc x) (suc y) with ord x y
 ... | lte xy = lte (suc≤suc x y xy)
 ... | gte yx = gte (suc≤suc y x yx)
+
+
+x≤x : (x : Nat) -> x ≤ x
+x≤x zero = zero≤ zero
+x≤x (suc x) = suc≤suc x x (x≤x x)
