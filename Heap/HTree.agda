@@ -1,13 +1,12 @@
 module Heap.HTree where
 
 open import Agda.Builtin.Nat
-open import Agda.Builtin.Size
 open import Heap.Item
 open import NatExt
 open import Tree
 
-HTree : {i : Size} -> Set
-HTree {i} = Tree {i} Item
+HTree : Set
+HTree = Tree Item
 
 rank : HTree -> Nat
 rank leaf = 0
