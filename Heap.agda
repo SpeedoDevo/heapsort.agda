@@ -10,7 +10,6 @@ open import Heap.IsHeap
 open import Heap.IsLeftist
 open import NatExt
 open import Ord
-open import Ord.Heap
 open import Tree hiding (singleton)
 
 record Heap {i : Size} : Set where

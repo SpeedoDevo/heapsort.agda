@@ -15,24 +15,6 @@ data _IsHeap : HTree -> Set where
     -> Item.value i ≤ value l -> Item.value i ≤ value r
     -> (branch l i r) IsHeap
 
--- mergeH : ∀ {l r} -> l IsHeap -> r IsHeap -> (mergeT l r) IsHeap
--- mergeH leafIsHeap r = r
--- mergeH l@(branchIsHeap _ _ _ _) leafIsHeap = l
--- mergeH {l@(branch ll (item lv _) lr)} {r@(branch rl (item rv _) rr)} lh@(branchIsHeap llih lrih llp lrp) rh@(branchIsHeap rlih rrih rlp rrp)
---    with ord lv rv
--- mergeH {l@(branch ll (item lv _) lr)} {r@(branch rl (item rv _) rr)} lh@(branchIsHeap llih lrih llp lrp) rh@(branchIsHeap rlih rrih rlp rrp)
---   | lte p with mergeT lr r
--- mergeH {l@(branch ll (item lv _) lr)} {r@(branch rl (item rv _) rr)} lh@(branchIsHeap llih lrih llp lrp) rh@(branchIsHeap rlih rrih rlp rrp)
---   | lte p | m with ord (rank ll) (rank m)
--- mergeH {l@(branch ll (item lv _) lr)} {r@(branch rl (item rv _) rr)} lh@(branchIsHeap llih lrih llp lrp) rh@(branchIsHeap rlih rrih rlp rrp)
---   | lte p | m | lte q with mergeH lrih rh
--- mergeH {branch ll (item lv _) lr} {branch rl (item rv _) rr} (branchIsHeap llih lrih llp lrp) (branchIsHeap rlih rrih rlp rrp)
---   | lte p | m | lte q | n = {!   !}
--- mergeH {l@(branch ll (item lv _) lr)} {r@(branch rl (item rv _) rr)} lh@(branchIsHeap llih lrih llp lrp) rh@(branchIsHeap rlih rrih rlp rrp)
---   | lte p | m | gte q  = {!   !}
--- mergeH {l@(branch ll (item lv _) lr)} {r@(branch rl (item rv _) rr)} lh@(branchIsHeap llih lrih llp lrp) rh@(branchIsHeap rlih rrih rlp rrp)
---   | gte p = {!  !}
-
 data _IH : (t : HTree) -> Set where
   leafIsHeap : (t : HTree) -> t ≡ leaf -> t IH
   branchIsHeap : ∀ {l i r} -> (t : HTree) -> t ≡ (branch l i r)
@@ -91,5 +73,25 @@ mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih 
   | gte x | m@(leafIsHeap .leaf refl) | n@.leaf | gte y
     = branchIsHeap (branch leaf (item rv 1) rl) refl (leafIsHeap leaf refl) rlih (rv ≤∞) rlp
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m@(branchIsHeap {_} {item mv _} mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | gte y
-    = branchIsHeap (branch mt (item rv (suc (rank mt))) rl) refl (branchIsHeap mt refl lih rih lp rp) rlih (lemma x) rlp
+  | gte x | m@(branchIsHeap mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | gte y with ord lv (value rr)
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m@(branchIsHeap mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | gte y | lte z
+    = branchIsHeap (branch mt (item rv (suc (rank mt))) rl) refl (branchIsHeap mt refl lih rih lp rp) rlih {!   !} rlp
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m@(branchIsHeap mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | gte y | gte z with mergeInheritsRightValue lt rr z
+mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+  | gte x | m@(branchIsHeap mt@.(branch _ _ _) refl lih rih lp rp) | .(branch _ .(value rr) _) | gte y | gte z | refl
+    = branchIsHeap (branch mt (item rv (suc (rank mt))) rl) refl (branchIsHeap mt refl lih rih lp rp) rlih {!   !} rlp
+
+
+-- mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
+--   | gte x | m@(branchIsHeap mt@.(branch _ _ _) refl lih rih lp rp) | n@.(branch _ _ _) | gte y | gte z | rreqmv
+--     = branchIsHeap (branch mt (item rv (suc (rank mt))) rl) refl (branchIsHeap mt refl lih rih lp rp) rlih {!   !} rlp
+        -- kkk : lv ≡ value (mergeT (branch ll (item lv .rank) lr) rr)
+        -- kkk with ord (value lt) (value rr)
+        -- kkk | lte z = mergeInheritsLeftValue lt rr z
+        -- kkk | gte z = mergeInheritsRightValue lt {!   !} z
+{-
+m : mergeT lt rr IH
+value rr ≡ value (mergeT lt rr)
+-}
