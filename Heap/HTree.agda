@@ -39,34 +39,7 @@ mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
 mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | gte p | merged | lte q = branch merged (item rVal (suc (rank rl))) rl
 mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
-  | gte p | merged | gte q = branch merged (item rVal (suc (rank merged))) rl
-
-
-lemma : ∀ {l r} -> value l ≤ value r -> value l ≤ value (mergeT l r)
-lemma {leaf} {r} p = p
-lemma {l@(branch ll li lr)} {leaf} p = x≤x (Item.value li)
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p with ord (value l) (value r)
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | lte q with mergeT lr r
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | lte q | m with ord (rank ll) (rank m)
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | lte q | m | lte s = x≤x (Item.value li)
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | lte q | m | gte s = x≤x (Item.value li)
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | gte q with mergeT l rr
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | gte q | m with ord (rank rl) (rank m)
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | gte q | m | lte s = p
-lemma {l@(branch ll li lr)} {r@(branch rl ri rr)} p | gte q | m | gte s = p
-
-lemma2 : (l r : HTree) -> value l ≤ value r -> value l ≤ value (mergeT l r)
-lemma2 (leaf) (r) p = p
-lemma2 (l@(branch ll li lr)) (leaf) p = x≤x (Item.value li)
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p with ord (value l) (value r)
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q with mergeT lr r
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m with ord (rank ll) (rank m)
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m | lte s = x≤x (Item.value li)
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m | gte s = x≤x (Item.value li)
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q with mergeT l rr
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m with ord (rank rl) (rank m)
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m | lte s = p
-lemma2 (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m | gte s = p
+  | gte p | merged | gte q = branch rl (item rVal (suc (rank merged))) merged
 
 mergeInheritsLeftValue : (l r : HTree)-> value l ≤ value r -> value l ≡ value (mergeT l r)
 mergeInheritsLeftValue (leaf) (r) p = infGteInf (value r) p
