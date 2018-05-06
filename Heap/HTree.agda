@@ -19,37 +19,38 @@ value : HTree -> Nat
 value leaf = ∞
 value (branch _ i _) = Item.value i
 
-mergeT : (l r : HTree) -> HTree
-mergeT leaf r = r
-mergeT l leaf = l
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+mergeTree : (l r : HTree) -> HTree
+mergeTree leaf r = r
+mergeTree l leaf = l
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   with ord lVal rVal
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
-  | lte p with mergeT lr r
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+  | lte p with mergeTree lr r
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | lte p | merged with ord (rank ll) (rank merged)
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | lte p | merged | lte q = branch merged (item lVal (suc (rank ll))) ll
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | lte p | merged | gte q = branch ll (item lVal (suc (rank merged))) merged
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
-  | gte p with mergeT l rr
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+  | gte p with mergeTree l rr
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | gte p | merged with ord (rank rl) (rank merged)
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | gte p | merged | lte q = branch merged (item rVal (suc (rank rl))) rl
-mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
+mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | gte p | merged | gte q = branch rl (item rVal (suc (rank merged))) merged
 
-mergeKeepsOrd : (t l r : HTree) -> value t ≤ value l -> value t ≤ value r -> value t ≤ value (mergeT l r)
+singletonTree : Nat -> HTree
+singletonTree v = branch ⊥ (item v 1) ⊥
+
+mergeKeepsOrd : (t l r : HTree) -> value t ≤ value l -> value t ≤ value r -> value t ≤ value (mergeTree l r)
 mergeKeepsOrd t (leaf) (r) o p = p
 mergeKeepsOrd t (l@(branch ll li lr)) (leaf) o p = o
 mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p with ord (value l) (value r)
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q with mergeT lr r
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | m with ord (rank ll) (rank m)
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | m | lte s = o
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | m | gte s = o
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q with mergeT l rr
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | m with ord (rank rl) (rank m)
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | m | lte s = p
-mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | m | gte s = p
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q with ord (rank ll) (rank (mergeTree lr r))
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | lte s = o
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | gte s = o
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q with ord (rank rl) (rank (mergeTree l rr))
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | lte s = p
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | gte s = p

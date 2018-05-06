@@ -9,29 +9,48 @@ open import NatExt
 open import Ord
 open import Tree
 
-data _IL : (t : HTree) -> Set where
-  leafIsLeftist : (t : HTree) -> t ≡ leaf -> t IL
-  branchIsLeftist : ∀ {l i r} -> (t : HTree) -> t ≡ (branch l i r)
-    -> l IL -> r IL
+data _IsLeftist : (t : HTree) -> Set where
+  leafIsLeftist : {t : HTree} -> t ≡ leaf -> t IsLeftist
+  branchIsLeftist : ∀ {l i r} -> {t : HTree} -> t ≡ (branch l i r)
+    -> l IsLeftist -> r IsLeftist
     -> rank r ≤ rank l
     -> rank t ≡ suc (rank r)
-    -> t IL
+    -> t IsLeftist
 
-mergeIL : {l r : HTree} -> l IL -> r IL -> (mergeT l r) IL
-mergeIL (leafIsLeftist .leaf refl) r = r
-mergeIL l@(branchIsLeftist .(branch _ _ _) refl _ _ _ _) (leafIsLeftist .leaf refl) = l
-mergeIL l@(branchIsLeftist {ll} {item lv lw} {lr} lt@.(branch _ _ _) refl llil lril lp lq) r@(branchIsLeftist {rl} {item rv rw} {rr} rt@.(branch _ _ _) refl rlil rril rp rq)
-  with ord lv rv
-mergeIL l@(branchIsLeftist {ll} {item lv lw} {lr} lt@.(branch _ _ _) refl llil lril lp lq) r@(branchIsLeftist {rl} {item rv rw} {rr} rt@.(branch _ _ _) refl rlil rril rp rq)
-  | lte x with mergeIL lril r | ord (rank ll) (rank (mergeT lr rt))
-mergeIL l@(branchIsLeftist {ll} {item lv lw} {lr} lt@.(branch _ _ _) refl llil lril lp lq) r@(branchIsLeftist {rl} {item rv rw} {rr} rt@.(branch _ _ _) refl rlil rril rp rq)
-  | lte x | m | lte y = branchIsLeftist _ refl m llil y refl
-mergeIL l@(branchIsLeftist {ll} {item lv lw} {lr} lt@.(branch _ _ _) refl llil lril lp lq) r@(branchIsLeftist {rl} {item rv rw} {rr} rt@.(branch _ _ _) refl rlil rril rp rq)
-  | lte x | m | gte y = branchIsLeftist _ refl llil m y refl
+mergeIsLeftist : {l r : HTree} -> l IsLeftist -> r IsLeftist -> (mergeTree l r) IsLeftist
+mergeIsLeftist (leafIsLeftist refl) r = r
+mergeIsLeftist l@(branchIsLeftist refl _ _ _ _) (leafIsLeftist refl) = l
 
-mergeIL l@(branchIsLeftist {ll} {item lv lw} {lr} lt@.(branch _ _ _) refl llil lril lp lq) r@(branchIsLeftist {rl} {item rv rw} {rr} rt@.(branch _ _ _) refl rlil rril rp rq)
-  | gte x with mergeIL l rril | ord (rank rl) (rank (mergeT lt rr))
-mergeIL l@(branchIsLeftist {ll} {item lv lw} {lr} lt@.(branch _ _ _) refl llil lril lp lq) r@(branchIsLeftist {rl} {item rv rw} {rr} rt@.(branch _ _ _) refl rlil rril rp rq)
-  | gte x | m | lte y = branchIsLeftist _ refl m rlil y refl
-mergeIL l@(branchIsLeftist {ll} {item lv lw} {lr} lt@.(branch _ _ _) refl llil lril lp lq) r@(branchIsLeftist {rl} {item rv rw} {rr} rt@.(branch _ _ _) refl rlil rril rp rq)
-  | gte x | m | gte y = branchIsLeftist _ refl rlil m y refl
+mergeIsLeftist
+  l@(branchIsLeftist {t = lt@(branch ll _ lr)} refl llil lril lp lq)
+  r@(branchIsLeftist {t = rt@(branch rl _ rr)} refl rlil rril rp rq)
+    with ord (value lt) (value rt)
+mergeIsLeftist
+  l@(branchIsLeftist {t = lt@(branch ll _ lr)} refl llil lril lp lq)
+  r@(branchIsLeftist {t = rt@(branch rl _ rr)} refl rlil rril rp rq)
+    | lte x with mergeIsLeftist lril r | ord (rank ll) (rank (mergeTree lr rt))
+mergeIsLeftist
+  l@(branchIsLeftist {t = lt@(branch ll _ lr)} refl llil lril lp lq)
+  r@(branchIsLeftist {t = rt@(branch rl _ rr)} refl rlil rril rp rq)
+    | lte x | m | lte y
+      = branchIsLeftist refl m llil y refl
+mergeIsLeftist
+  l@(branchIsLeftist {t = lt@(branch ll _ lr)} refl llil lril lp lq)
+  r@(branchIsLeftist {t = rt@(branch rl _ rr)} refl rlil rril rp rq)
+    | lte x | m | gte y
+      = branchIsLeftist refl llil m y refl
+
+mergeIsLeftist
+  l@(branchIsLeftist {t = lt@(branch ll _ lr)} refl llil lril lp lq)
+  r@(branchIsLeftist {t = rt@(branch rl _ rr)} refl rlil rril rp rq)
+    | gte x with mergeIsLeftist l rril | ord (rank rl) (rank (mergeTree lt rr))
+mergeIsLeftist
+  l@(branchIsLeftist {t = lt@(branch ll _ lr)} refl llil lril lp lq)
+  r@(branchIsLeftist {t = rt@(branch rl _ rr)} refl rlil rril rp rq)
+    | gte x | m | lte y
+      = branchIsLeftist refl m rlil y refl
+mergeIsLeftist
+  l@(branchIsLeftist {t = lt@(branch ll _ lr)} refl llil lril lp lq)
+  r@(branchIsLeftist {t = rt@(branch rl _ rr)} refl rlil rril rp rq)
+    | gte x | m | gte y
+      = branchIsLeftist refl rlil m y refl

@@ -9,32 +9,47 @@ open import NatExt
 open import Ord
 open import Tree
 
-data _IH : (t : HTree) -> Set where
-  leafIsHeap : (t : HTree) -> t ≡ leaf -> t IH
-  branchIsHeap : ∀ {l i r} -> (t : HTree) -> t ≡ (branch l i r)
-    -> l IH -> r IH
+data _IsHeap : (t : HTree) -> Set where
+  leafIsHeap : {t : HTree} -> t ≡ leaf -> t IsHeap
+  branchIsHeap : ∀ {l i r} -> {t : HTree} -> t ≡ (branch l i r)
+    -> l IsHeap -> r IsHeap
     -> Item.value i ≤ value l -> Item.value i ≤ value r
-    -> t IH
+    -> t IsHeap
 
-mergeIH : {l r : HTree} -> l IH -> r IH -> (mergeT l r) IH
-mergeIH (leafIsHeap .leaf refl) r = r
-mergeIH l@(branchIsHeap .(branch _ _ _) refl _ _ _ _) (leafIsHeap .leaf refl) = l
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  with ord lv rv
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x with mergeIH lrih r
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m with ord (rank ll) (rank (mergeT lr rt))
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m | lte y = branchIsHeap _ refl m llih (mergeKeepsOrd lt lr rt lrp x) llp
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m | gte y = branchIsHeap _ refl llih m llp (mergeKeepsOrd lt lr rt lrp x)
+mergeIsHeap : {l r : HTree} -> l IsHeap -> r IsHeap -> (mergeTree l r) IsHeap
+mergeIsHeap (leafIsHeap refl) r = r
+mergeIsHeap l@(branchIsHeap refl _ _ _ _) (leafIsHeap refl) = l
 
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x with mergeIH l rrih
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m with ord (rank rl) (rank (mergeT lt rr))
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m | lte y = branchIsHeap _ refl m rlih (mergeKeepsOrd rt lt rr x rrp) rlp
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m | gte y = branchIsHeap _ refl rlih m rlp (mergeKeepsOrd rt lt rr x rrp)
+mergeIsHeap
+  l@(branchIsHeap {t = lt@(branch ll _ lr)} refl llih lrih llp lrp)
+  r@(branchIsHeap {t = rt@(branch rl _ rr)} refl rlih rrih rlp rrp)
+    with ord (value lt) (value rt)
+mergeIsHeap
+  l@(branchIsHeap {t = lt@(branch ll _ lr)} refl llih lrih llp lrp)
+  r@(branchIsHeap {t = rt@(branch rl _ rr)} refl rlih rrih rlp rrp)
+    | lte x with mergeIsHeap lrih r | ord (rank ll) (rank (mergeTree lr rt))
+mergeIsHeap
+  l@(branchIsHeap {t = lt@(branch ll _ lr)} refl llih lrih llp lrp)
+  r@(branchIsHeap {t = rt@(branch rl _ rr)} refl rlih rrih rlp rrp)
+    | lte x | m | lte y
+      = branchIsHeap refl m llih (mergeKeepsOrd lt lr rt lrp x) llp
+mergeIsHeap
+  l@(branchIsHeap {t = lt@(branch ll _ lr)} refl llih lrih llp lrp)
+  r@(branchIsHeap {t = rt@(branch rl _ rr)} refl rlih rrih rlp rrp)
+    | lte x | m | gte y
+      = branchIsHeap refl llih m llp (mergeKeepsOrd lt lr rt lrp x)
+
+mergeIsHeap
+  l@(branchIsHeap {t = lt@(branch ll _ lr)} refl llih lrih llp lrp)
+  r@(branchIsHeap {t = rt@(branch rl _ rr)} refl rlih rrih rlp rrp)
+    | gte x with mergeIsHeap l rrih | ord (rank rl) (rank (mergeTree lt rr))
+mergeIsHeap
+  l@(branchIsHeap {t = lt@(branch ll _ lr)} refl llih lrih llp lrp)
+  r@(branchIsHeap {t = rt@(branch rl _ rr)} refl rlih rrih rlp rrp)
+    | gte x | m | lte y
+      = branchIsHeap refl m rlih (mergeKeepsOrd rt lt rr x rrp) rlp
+mergeIsHeap
+  l@(branchIsHeap {t = lt@(branch ll _ lr)} refl llih lrih llp lrp)
+  r@(branchIsHeap {t = rt@(branch rl _ rr)} refl rlih rrih rlp rrp)
+    | gte x | m | gte y
+      = branchIsHeap refl rlih m rlp (mergeKeepsOrd rt lt rr x rrp)
