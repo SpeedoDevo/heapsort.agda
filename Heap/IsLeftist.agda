@@ -9,13 +9,6 @@ open import NatExt
 open import Ord
 open import Tree
 
-data _IsLeftist : HTree -> Set where
-  leafIsLeftist : ⊥ IsLeftist
-  branchIsLeftist : ∀ {l r i} -> l IsLeftist -> r IsLeftist
-    -> rank r ≤ rank l
-    -- -> Item.rank i ≡ 1 + (min (rank l) (rank r))
-    -> (branch l i r) IsLeftist
-
 data _IL : (t : HTree) -> Set where
   leafIsLeftist : (t : HTree) -> t ≡ leaf -> t IL
   branchIsLeftist : ∀ {l i r} -> (t : HTree) -> t ≡ (branch l i r)

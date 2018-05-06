@@ -9,12 +9,6 @@ open import NatExt
 open import Ord
 open import Tree
 
-data _IsHeap : HTree -> Set where
-  leafIsHeap : ⊥ IsHeap
-  branchIsHeap : ∀ {l i r} -> l IsHeap -> r IsHeap
-    -> Item.value i ≤ value l -> Item.value i ≤ value r
-    -> (branch l i r) IsHeap
-
 data _IH : (t : HTree) -> Set where
   leafIsHeap : (t : HTree) -> t ≡ leaf -> t IH
   branchIsHeap : ∀ {l i r} -> (t : HTree) -> t ≡ (branch l i r)
