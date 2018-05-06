@@ -30,25 +30,17 @@ mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih 
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
   | lte x with mergeIH lrih r
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m with ord (rank ll) (rank (mergeT lr rt)) | ord (value lr) (value rt)
+  | lte x | m with ord (rank ll) (rank (mergeT lr rt))
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m | lte y | lte z = branchIsHeap _ refl m llih (substitution (mergeInheritsLeftValue lr rt z) lrp) llp
+  | lte x | m | lte y = branchIsHeap _ refl m llih (mergeKeepsOrd lt lr rt lrp x) llp
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m | lte y | gte z = branchIsHeap _ refl m llih (substitution (mergeInheritsRightValue lr rt z) x) llp
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m | gte y | lte z = branchIsHeap _ refl llih m llp (substitution (mergeInheritsLeftValue lr rt z) lrp)
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | lte x | m | gte y | gte z = branchIsHeap _ refl llih m llp (substitution (mergeInheritsRightValue lr rt z) x)
+  | lte x | m | gte y = branchIsHeap _ refl llih m llp (mergeKeepsOrd lt lr rt lrp x)
 
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
   | gte x with mergeIH l rrih
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m with ord (rank rl) (rank (mergeT lt rr)) | ord (value lt) (value rr)
+  | gte x | m with ord (rank rl) (rank (mergeT lt rr))
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m | lte y | lte z = branchIsHeap _ refl m rlih (substitution (mergeInheritsLeftValue lt rr z) x) rlp
+  | gte x | m | lte y = branchIsHeap _ refl m rlih (mergeKeepsOrd rt lt rr x rrp) rlp
 mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m | lte y | gte z = branchIsHeap _ refl m rlih (substitution (mergeInheritsRightValue lt rr z) rrp) rlp
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m | gte y | lte z = branchIsHeap _ refl rlih m rlp (substitution (mergeInheritsLeftValue lt rr z) x)
-mergeIH l@(branchIsHeap {ll} {item lv _} {lr} lt@.(branch _ _ _) refl llih lrih llp lrp) r@(branchIsHeap {rl} {item rv _} {rr} rt@.(branch _ _ _) refl rlih rrih rlp rrp)
-  | gte x | m | gte y | gte z = branchIsHeap _ refl rlih m rlp (substitution (mergeInheritsRightValue lt rr z) rrp)
+  | gte x | m | gte y = branchIsHeap _ refl rlih m rlp (mergeKeepsOrd rt lt rr x rrp)

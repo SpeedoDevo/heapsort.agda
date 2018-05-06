@@ -41,28 +41,15 @@ mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
 mergeT l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | gte p | merged | gte q = branch rl (item rVal (suc (rank merged))) merged
 
-mergeInheritsLeftValue : (l r : HTree)-> value l ≤ value r -> value l ≡ value (mergeT l r)
-mergeInheritsLeftValue (leaf) (r) p = infGteInf (value r) p
-mergeInheritsLeftValue (l@(branch ll li lr)) (leaf) p = refl
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p with ord (value l) (value r)
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q with mergeT lr r
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m with ord (rank ll) (rank m)
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m | lte s = refl
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m | gte s = refl
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q with mergeT l rr
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m with ord (rank rl) (rank m)
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m | lte s = ordToEq (Item.value li) (Item.value ri) p q
-mergeInheritsLeftValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m | gte s = ordToEq (Item.value li) (Item.value ri) p q
-
-mergeInheritsRightValue : (l r : HTree)-> value r ≤ value l -> value r ≡ value (mergeT l r)
-mergeInheritsRightValue (leaf) (r) p = refl
-mergeInheritsRightValue (l@(branch ll li lr)) (leaf) p = infGteInf (Item.value li) p
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p with ord (value l) (value r)
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q with mergeT lr r
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m with ord (rank ll) (rank m)
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m | lte s = ordToEq (Item.value ri) (Item.value li) p q
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | lte q | m | gte s = ordToEq (Item.value ri) (Item.value li) p q
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q with mergeT l rr
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m with ord (rank rl) (rank m)
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m | lte s = refl
-mergeInheritsRightValue (l@(branch ll li lr)) (r@(branch rl ri rr)) p | gte q | m | gte s = refl
+mergeKeepsOrd : (t l r : HTree) -> value t ≤ value l -> value t ≤ value r -> value t ≤ value (mergeT l r)
+mergeKeepsOrd t (leaf) (r) o p = p
+mergeKeepsOrd t (l@(branch ll li lr)) (leaf) o p = o
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p with ord (value l) (value r)
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q with mergeT lr r
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | m with ord (rank ll) (rank m)
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | m | lte s = o
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | m | gte s = o
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q with mergeT l rr
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | m with ord (rank rl) (rank m)
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | m | lte s = p
+mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | m | gte s = p

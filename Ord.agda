@@ -2,7 +2,6 @@ module Ord where
 
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Nat
-open import Agda.Builtin.Bool
 
 data _≤_ : Nat → Nat → Set where
   zero≤ : (y : Nat) → zero ≤ y
@@ -29,6 +28,3 @@ ordToEq .(suc x) .(suc y) (suc≤suc x y p) (suc≤suc .y .x q) rewrite ordToEq 
 
 eqToOrd : (x y : Nat) -> x ≡ y -> x ≤ y
 eqToOrd x .x refl = x≤x x
-
-substitution : ∀ {a b c} -> b ≡ a -> c ≤ b -> c ≤ a
-substitution refl q = q
