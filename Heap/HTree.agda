@@ -2,11 +2,13 @@ module Heap.HTree where
 
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Nat
+open import Agda.Builtin.Unit
 
 open import Heap.Item
 open import NatExt
 open import Ord
 open import Tree
+open import Tuple
 
 HTree : Set
 HTree = Tree Item
@@ -54,3 +56,10 @@ mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | lte q | gte s 
 mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q with ord (rank rl) (rank (mergeTree l rr))
 mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | lte s = p
 mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | gte s = p
+
+popTree : HTree -> Tuple Nat HTree
+popTree leaf = ∞ ** ⊥
+popTree (branch l (item v _) r) = v ** mergeTree l r
+
+insertTree : Nat -> HTree -> HTree
+insertTree n t = mergeTree (singletonTree n) t
