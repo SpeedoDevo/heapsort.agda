@@ -43,8 +43,8 @@ mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
 mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
   | gte p | merged | gte q = branch rl (item rVal (suc (rank merged))) merged
 
-singletonTree : Nat -> HTree
-singletonTree v = branch ⊥ (item v 1) ⊥
+singletonHTree : Nat -> HTree
+singletonHTree v = branch ⊥ (item v 1) ⊥
 
 mergeKeepsOrd : (t l r : HTree) -> value t ≤ value l -> value t ≤ value r -> value t ≤ value (mergeTree l r)
 mergeKeepsOrd t (leaf) (r) o p = p
@@ -62,4 +62,4 @@ popTree leaf = ∞ ** ⊥
 popTree (branch l (item v _) r) = v ** mergeTree l r
 
 insertTree : Nat -> HTree -> HTree
-insertTree n t = mergeTree (singletonTree n) t
+insertTree n t = mergeTree (singletonHTree n) t

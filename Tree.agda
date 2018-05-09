@@ -9,5 +9,5 @@ data Tree : (A : Set) -> Set where
 ⊥ : ∀ {A} -> Tree A
 ⊥ = leaf
 
-singleton : Nat -> Tree Nat
-singleton n = branch ⊥ n ⊥
+singletonTree : Nat -> Tree Nat
+singletonTree n = branch ⊥ n ⊥

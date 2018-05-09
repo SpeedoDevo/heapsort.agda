@@ -2,7 +2,6 @@ module Heap where
 
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Nat
-open import Agda.Builtin.Size
 
 open import Heap.HTree
 open import Heap.Item
@@ -10,7 +9,7 @@ open import Heap.IsHeap
 open import Heap.IsLeftist
 open import NatExt
 open import Ord
-open import Tree hiding (singleton)
+open import Tree
 open import Tuple
 
 record LeftistHeap (t : HTree) : Set where
@@ -20,7 +19,7 @@ record LeftistHeap (t : HTree) : Set where
     isHeap : t IsHeap
 open LeftistHeap
 
-singleton : (v : Nat) -> LeftistHeap (singletonTree v)
+singleton : (v : Nat) -> LeftistHeap (singletonHTree v)
 singleton v = leftistHeap
     (branchIsLeftist refl (leafIsLeftist refl) (leafIsLeftist refl) (zero≤ zero) refl)
     (branchIsHeap refl (leafIsHeap refl) (leafIsHeap refl) (v ≤∞) (v ≤∞))
