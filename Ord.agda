@@ -28,3 +28,8 @@ ordToEq .(suc x) .(suc y) (suc≤suc x y p) (suc≤suc .y .x q) rewrite ordToEq 
 
 eqToOrd : (x y : Nat) -> x ≡ y -> x ≤ y
 eqToOrd x .x refl = x≤x x
+
+transitive : ∀ {x y z} -> x ≤ y -> y ≤ z -> x ≤ z
+transitive (zero≤ .0) (zero≤ y) = zero≤ y
+transitive (zero≤ .(suc x)) (suc≤suc x y q) = zero≤ (suc y)
+transitive (suc≤suc x y p) (suc≤suc .y z q) = suc≤suc x z (transitive p q)

@@ -57,6 +57,10 @@ mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q with ord
 mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | lte s = p
 mergeKeepsOrd t (l@(branch ll li lr)) (r@(branch rl ri rr)) o p | gte q | gte s = p
 
+deleteMinTree : HTree -> HTree
+deleteMinTree leaf = leaf
+deleteMinTree (branch l _ r) = mergeTree l r
+
 popTree : HTree -> Tuple Nat HTree
 popTree leaf = ∞ ** ⊥
 popTree (branch l (item v _) r) = v ** mergeTree l r

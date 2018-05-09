@@ -27,12 +27,20 @@ singleton v = leftistHeap
 merge : {l r : HTree} -> LeftistHeap l -> LeftistHeap r -> LeftistHeap (mergeTree l r)
 merge l r = leftistHeap (mergeIsLeftist (isLeftist l) (isLeftist r)) (mergeIsHeap (isHeap l) (isHeap r))
 
-pop : {t : HTree} -> LeftistHeap t -> Tuple Nat (LeftistHeap (Tuple.snd (popTree t)))
-pop {leaf} h = ∞ ** leftistHeap (isLeftist h) (isHeap h)
-pop {branch l i r} (leftistHeap (leafIsLeftist ()) ih)
-pop {branch l i r} (leftistHeap lh (leafIsHeap ()))
-pop {branch l i r} (leftistHeap (branchIsLeftist refl lil ril lp rp) (branchIsHeap refl lih rih p q))
-  = (Item.value i) ** leftistHeap (mergeIsLeftist lil ril) (mergeIsHeap lih rih)
+deleteMin : {t : HTree} -> LeftistHeap t -> LeftistHeap (deleteMinTree t)
+deleteMin {leaf} h = leftistHeap (isLeftist h) (isHeap h)
+deleteMin {branch _ _ _} (leftistHeap (leafIsLeftist ()) ih)
+deleteMin {branch _ _ _} (leftistHeap il (leafIsHeap ()))
+deleteMin {branch _ _ _} (leftistHeap (branchIsLeftist refl lil ril p q) (branchIsHeap refl lih rih lp rp))
+  = merge (leftistHeap lil lih) (leftistHeap ril rih)
 
-popSingleton : ∀ {n} -> n ≡ Tuple.fst (pop (singleton n))
-popSingleton {n} = refl
+data PopD : Set where
+  popd : {t : HTree} (v : Nat) (h : LeftistHeap t) -> (vvt : v ≤ value t) -> PopD
+
+pop : {t : HTree} -> LeftistHeap t -> PopD
+pop {leaf} h@(leftistHeap _ _)
+  = popd {leaf} (value leaf) h (x≤x ∞)
+pop {branch _ _ _} h@(leftistHeap (leafIsLeftist ()) _)
+pop {branch _ _ _} h@(leftistHeap _ (leafIsHeap ()))
+pop {t@(branch l _ r)} h@(leftistHeap _ (branchIsHeap refl lih rih lp rp))
+  = popd (value t) (deleteMin h) (mergeKeepsOrd t l r lp rp)
