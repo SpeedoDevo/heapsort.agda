@@ -1,4 +1,4 @@
-module Sort.Permutation.Merge where
+module Sort.Permutation.Tree where
 
 open import Agda.Builtin.Nat
 
