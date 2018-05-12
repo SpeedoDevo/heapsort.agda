@@ -17,6 +17,7 @@ open import Sort.Permutation
 open import Sort.Sort
 open import Tree
 
+-- the sorted version of a list is both ordered and a permutation of the list
 record Sorted (xs : List Nat) : Set where
   constructor sorted
   field

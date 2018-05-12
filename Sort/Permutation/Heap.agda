@@ -17,23 +17,30 @@ open import Sort.Sort
 open import Tree
 
 data HContains (v : Nat) : {t : HTree} -> LeftistHeap t -> Set where
+  -- the heap contains v if its tree contains v
   contains : ∀ {t} -> (h : LeftistHeap t) -> TContains v t -> HContains v h
 
+-- if xs contains x then toHeap xs contains x
 toHeapContains : ∀ {x xs} -> LContains x xs -> HContains x (toHeap xs)
 toHeapContains {x} {xs} p = contains (toHeap xs) (insertAllContains p)
 
+-- merge contains everything from the left heap
 mergeContainsLeft : ∀ {x lt rt} -> (l : LeftistHeap lt) -> (r : LeftistHeap rt) -> HContains x l -> HContains x (merge l r)
 mergeContainsLeft {x} {lt} {rt} l r (contains .l p) = contains {x} {_} (merge l r) (mergeTreeContainsLeft {x} {lt} {rt} p)
 
+-- merge contains everything from the right heap
 mergeContainsRight : ∀ {x lt rt} -> (l : LeftistHeap lt) -> (r : LeftistHeap rt) -> HContains x r -> HContains x (merge l r)
 mergeContainsRight {x} {lt} {rt} l r (contains .r p) = contains {x} {_} (merge l r) (mergeTreeContainsRight {x} {lt} {rt} p)
 
+-- if h heap contains x then flatten h list contains x
+-- can't track the tree depth when merging subtrees so the termination checker fails :(
 {-# TERMINATING #-}
 flattenContains : ∀ {x t h} -> HContains x h -> LContains x (flatten {t} h)
 flattenContains {x} {leaf} {.h} (contains h ())
 flattenContains {x} {_} {_} (contains (leftistHeap (leafIsLeftist ()) _) here)
 flattenContains {x} {_} {_} (contains (leftistHeap (branchIsLeftist _ _ _ _ _) (leafIsHeap ())) here)
-flattenContains {x} {.(branch _ (item x _) _)} {h} (contains (leftistHeap (branchIsLeftist refl lil ril ilp ilq) (branchIsHeap refl lih rih lp rp)) here) = here
+flattenContains {x} {.(branch _ (item x _) _)} {h} (contains (leftistHeap (branchIsLeftist refl lil ril ilp ilq) (branchIsHeap refl lih rih lp rp)) here)
+  = here
 flattenContains {x} {_} {_} (contains (leftistHeap (leafIsLeftist ()) _) (toLeft _))
 flattenContains {x} {_} {_} (contains (leftistHeap (branchIsLeftist _ _ _ _ _) (leafIsHeap ())) (toLeft _))
 flattenContains {x} {t@(branch l i r)} {h} (contains (leftistHeap (branchIsLeftist refl lil ril ilp ilq) (branchIsHeap refl lih rih lp rp)) (toLeft p))

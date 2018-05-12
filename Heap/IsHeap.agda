@@ -16,6 +16,7 @@ data _IsHeap : (t : HTree) -> Set where
     -> Item.value i ≤ value l -> Item.value i ≤ value r
     -> t IsHeap
 
+-- merging two trees with the heap property keeps the heap property
 mergeIsHeap : {l r : HTree} -> l IsHeap -> r IsHeap -> (mergeTree l r) IsHeap
 mergeIsHeap (leafIsHeap refl) r = r
 mergeIsHeap l@(branchIsHeap refl _ _ _ _) (leafIsHeap refl) = l

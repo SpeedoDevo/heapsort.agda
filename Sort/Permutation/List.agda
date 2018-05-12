@@ -19,6 +19,7 @@ rest : ∀ {x} xs -> LContains x xs -> List Nat
 rest .(_ ∷ xs) (here {xs}) = xs
 rest .(y ∷ ys) (there {y} {ys} p) = y ∷ rest ys p
 
+-- if list xs contains x then insertAll xs tree contains x too
 insertAllContains : ∀ {x xs} -> LContains x xs -> TContains x (insertAll xs)
 insertAllContains {x} {.x ∷ xs} here = mergeContainsLeft {x} {singletonHTree x} {insertAll xs} (singletonContains {x})
 insertAllContains {x} {y ∷ ys} (there p) = mergeContainsRight {x} {singletonHTree y} {insertAll ys} (insertAllContains {x} {ys} p)

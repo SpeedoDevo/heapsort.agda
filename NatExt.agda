@@ -5,6 +5,7 @@ open import Agda.Builtin.Nat
 
 open import Ord
 
+-- extend the natural numbers with infinity
 postulate ∞ : Nat
 postulate _≤∞ : (n : Nat) -> n ≤ ∞
 

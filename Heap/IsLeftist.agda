@@ -17,6 +17,7 @@ data _IsLeftist : (t : HTree) -> Set where
     -> rank t ≡ suc (rank r)
     -> t IsLeftist
 
+-- merging two trees with the leftist property keeps the leftist property
 mergeIsLeftist : {l r : HTree} -> l IsLeftist -> r IsLeftist -> (mergeTree l r) IsLeftist
 mergeIsLeftist (leafIsLeftist refl) r = r
 mergeIsLeftist l@(branchIsLeftist refl _ _ _ _) (leafIsLeftist refl) = l

@@ -10,7 +10,7 @@ open import Ord
 open import Tree
 open import Tuple
 
-HTree : Set
+HTree : Set -- type alias
 HTree = Tree Item
 
 rank : HTree -> Nat
@@ -21,6 +21,7 @@ value : HTree -> Nat
 value leaf = ∞
 value (branch _ i _) = Item.value i
 
+-- see http://zhu45.org/posts/2017/Apr/04/leftist-heap/ for visualisation
 mergeTree : (l r : HTree) -> HTree
 mergeTree leaf r = r
 mergeTree l leaf = l
@@ -46,6 +47,7 @@ mergeTree l@(branch ll (item lVal lRank) lr) r@(branch rl (item rVal rRank) rr)
 singletonHTree : Nat -> HTree
 singletonHTree v = branch ⊥ (item v 1) ⊥
 
+-- if we know that a tree's value is less than the two other trees being merged then the known value will be less than the merged tree's value
 mergeKeepsOrd : (t l r : HTree) -> value t ≤ value l -> value t ≤ value r -> value t ≤ value (mergeTree l r)
 mergeKeepsOrd t (leaf) (r) o p = p
 mergeKeepsOrd t (l@(branch ll li lr)) (leaf) o p = o

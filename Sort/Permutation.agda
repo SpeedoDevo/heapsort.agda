@@ -24,17 +24,11 @@ data SContains (x : Nat) : List Nat -> Set where
 sortContains : ∀ x xs -> LContains x xs -> SContains x xs
 sortContains x xs p = contains xs p (flattenContains (toHeapContains p))
 
-sortContainsInv : ∀ x xs -> SContains x xs -> LContains x xs
-sortContainsInv x xs (contains .xs p _) = p
-
 data Permutation : List Nat -> List Nat -> Set where
   [] : Permutation [] []
   _∷_ : ∀ {x xs ys} -> (p : LContains x xs) -> Permutation ys (rest xs p) -> Permutation (x ∷ ys) xs
 
-test : Permutation (1 ∷ 2 ∷ 3 ∷ []) (3 ∷ 2 ∷ 1 ∷ [])
-test = (there (there here)) ∷ ((there here) ∷ (here ∷ []))
-
--- TODO prove this
+-- TODO prove this, dunno how
 postulate
   restSortPermutation : ∀ x xs q -> Permutation xs (rest {x} (sort (x ∷ xs)) q)
 

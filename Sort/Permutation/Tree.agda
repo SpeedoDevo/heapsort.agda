@@ -16,6 +16,7 @@ data TContains (v : Nat) : HTree -> Set where
 singletonContains : ∀ {n} -> TContains n (singletonHTree n)
 singletonContains {n} = here {n} {⊥} {1} {⊥}
 
+-- if a tree contains x and it is merged with another tree then the merged tree will contain x too
 mergeContainsLeft : ∀ {x l r} -> TContains x l -> TContains x (mergeTree l r)
 mergeContainsLeft {_} {leaf} ()
 mergeContainsLeft {_} {branch _ _ _} {leaf} p = p
@@ -45,6 +46,7 @@ mergeContainsLeft {x} {l@(branch ll _ lr)} {r@(branch rl _ rr)} (toRight p) | gt
 mergeContainsLeft {x} {l@(branch ll _ lr)} {r@(branch rl _ rr)} (toRight p) | gte o | lte n = toLeft (mergeContainsLeft {x} {l} {rr} (toRight p))
 mergeContainsLeft {x} {l@(branch ll _ lr)} {r@(branch rl _ rr)} (toRight p) | gte o | gte n = toRight (mergeContainsLeft {x} {l} {rr} (toRight p))
 
+-- if a tree contains x and it is merged with another tree then the merged tree will contain x too
 mergeContainsRight : ∀ {x l r} -> TContains x r -> TContains x (mergeTree l r)
 mergeContainsRight {_} {leaf} {r} p = p
 mergeContainsRight {_} {l = branch _ _ _} {leaf} ()
