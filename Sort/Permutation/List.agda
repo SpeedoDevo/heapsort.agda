@@ -15,9 +15,9 @@ data LContains (x : Nat) : List Nat -> Set where
   here : ∀ {xs} -> LContains x (x ∷ xs)
   there : ∀ {y ys} -> LContains x ys -> LContains x (y ∷ ys)
 
-rest : ∀ {x xs} -> LContains x xs -> List Nat
-rest {_} {.(_ ∷ xs)} (here {xs}) = xs
-rest {_} {.(y ∷ _)} (there {y} p) = y ∷ rest p
+rest : ∀ {x} xs -> LContains x xs -> List Nat
+rest .(_ ∷ xs) (here {xs}) = xs
+rest .(y ∷ ys) (there {y} {ys} p) = y ∷ rest ys p
 
 insertAllContains : ∀ {x xs} -> LContains x xs -> TContains x (insertAll xs)
 insertAllContains {x} {.x ∷ xs} here = mergeContainsLeft {x} {singletonHTree x} {insertAll xs} (singletonContains {x})

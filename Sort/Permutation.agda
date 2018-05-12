@@ -9,6 +9,7 @@ open import Heap.HTree
 open import Heap.Item
 open import Heap.IsHeap
 open import Heap.IsLeftist
+open import NatExt
 open import Ord
 open import Sort
 open import Sort.Permutation.List
@@ -17,15 +18,27 @@ open import Sort.Permutation.Heap
 open import Sort.Sort
 open import Tree
 
-sortContains : ∀ {x xs} -> LContains x xs -> LContains x (sort xs)
-sortContains {x} {xs} p = flattenContains (toHeapContains p)
+data SContains (x : Nat) : List Nat -> Set where
+  contains : ∀ xs -> (p : LContains x xs) -> (q : LContains x (sort xs)) -> SContains x xs
+
+sortContains : ∀ x xs -> LContains x xs -> SContains x xs
+sortContains x xs p = contains xs p (flattenContains (toHeapContains p))
+
+sortContainsInv : ∀ x xs -> SContains x xs -> LContains x xs
+sortContainsInv x xs (contains .xs p _) = p
 
 data Permutation : List Nat -> List Nat -> Set where
   [] : Permutation [] []
-  _∷_ : ∀ {x xs ys} -> (c : LContains x xs) -> Permutation ys (rest c) -> Permutation (x ∷ ys) xs
+  _∷_ : ∀ {x xs ys} -> (p : LContains x xs) -> Permutation ys (rest xs p) -> Permutation (x ∷ ys) xs
 
-test : ∀ x y -> Permutation (x ∷ y ∷ []) (y ∷ x ∷ [])
-test x y = (there here) ∷ (here ∷ [])
+test : Permutation (1 ∷ 2 ∷ 3 ∷ []) (3 ∷ 2 ∷ 1 ∷ [])
+test = (there (there here)) ∷ ((there here) ∷ (here ∷ []))
 
-test2 : ∀ x y z -> Permutation (x ∷ y ∷ z ∷ []) (y ∷ z ∷ x ∷ [])
-test2 x y z = (there (there here)) ∷ (here ∷ (here ∷ []))
+-- TODO prove this
+postulate
+  restSortPermutation : ∀ x xs q -> Permutation xs (rest {x} (sort (x ∷ xs)) q)
+
+sortIsPermutation : ∀ xs -> Permutation xs (sort xs)
+sortIsPermutation [] = []
+sortIsPermutation (x ∷ xs) with sortContains x (x ∷ xs) here
+... | contains _ p q = q ∷ restSortPermutation x xs q
