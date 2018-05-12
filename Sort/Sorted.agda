@@ -26,4 +26,4 @@ record Sorted (xs : List Nat) : Set where
     permutation : Permutation xs sxs
 
 sortedProof : ∀ xs -> Sorted xs
-sortedProof xs = sorted (sort xs) (sortMakesOrdered {xs}) (sortIsPermutation xs)
+sortedProof xs = sorted (sort xs) (sortMakesOrdered {xs}) (sortMakesPermutation xs)
